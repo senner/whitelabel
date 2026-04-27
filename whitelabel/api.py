@@ -21,12 +21,16 @@ def whitelabel_patch():
 
 
 def update_field_label():
-	"""Update label of section break in employee doctype"""
-	frappe.db.sql(
-		"""Update `tabDocField` set label='ERP' where fieldname='erpnext_user' and parent='Employee'"""
-	)
-
-
+    if not frappe.db.exists("DocField", {"parent": "Employee", "fieldname": "erpnext_user"}):
+        return
+    frappe.make_property_setter({
+        "doctype": "Employee",
+        "fieldname": "erpnext_user",
+        "property": "label",
+        "value": "ERP",
+        "property_type": "Data",
+    })
+	
 def get_frappe_version():
 	return frappe.db.get_value("Installed Application", {"app_name": "frappe"}, "app_version").split(".")[0]
 
